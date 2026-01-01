@@ -15,13 +15,6 @@ export type AUTHENTICATION_T = {
 	redirectIfAuthenticated?: string | null;
 };
 
-export type USER_T = {
-	username: string;
-	firstname: string;
-	lastname: string;
-	profilePic: string;
-};
-
 export type AUTH_ERROR_T = {
 	code?: string;
 	message?: string;

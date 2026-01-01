@@ -4,4 +4,5 @@ export type Feed = {
 	username: string;
 	createdAt: string;
 	updatedAt: string;
+	user: User;
 };

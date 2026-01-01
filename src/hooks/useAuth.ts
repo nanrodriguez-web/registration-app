@@ -1,6 +1,7 @@
 import { useErrorHandling } from "@/hooks/useErrorHandling";
 import api from "@/lib/api";
 import { getUser } from "@/lib/data/user";
+import useUser from "@/stores/User";
 import type {
 	AUTH_ERROR_T,
 	AUTHENTICATION_T,
@@ -27,6 +28,7 @@ interface UseAuthReturn {
 		setFormErrors: React.Dispatch<React.SetStateAction<AUTH_ERROR_T | null>>
 	) => Promise<boolean>;
 	logout: () => Promise<void>;
+	loggingOut: boolean;
 }
 
 export default function useAuth({
@@ -35,6 +37,10 @@ export default function useAuth({
 }: AUTHENTICATION_T): UseAuthReturn {
 	const navigate = useNavigate();
 	const { handleError } = useErrorHandling();
+
+	const [loggingOut, setLoggingOut] = useState<boolean>(false);
+
+	const { setUser } = useUser();
 
 	/**
 	 * Token state
@@ -131,19 +137,22 @@ export default function useAuth({
 	 * Logout
 	 */
 	const logout = async (): Promise<void> => {
+		setLoggingOut(true);
 		try {
 			await api.post("/api/account/logout");
+			Cookies.remove("auth");
+			setToken(null);
+
+			// Clear user immediately
+			await mutate(null, false);
+
+			navigate("/");
 		} catch {
 			// ignore backend failure
+			toast.error("Something went wrong on logout");
+		} finally {
+			setLoggingOut(false);
 		}
-
-		Cookies.remove("auth");
-		setToken(null);
-
-		// Clear user immediately
-		await mutate(null, false);
-
-		navigate("/");
 	};
 
 	/**
@@ -161,6 +170,10 @@ export default function useAuth({
 		if (middleware === "auth" && !user) {
 			window.location.replace("/");
 		}
+
+		if (user) {
+			setUser(user);
+		}
 	}, [middleware, redirectIfAuthenticated, user, loadingUser, navigate]);
 
 	return {
@@ -170,5 +183,6 @@ export default function useAuth({
 		SignIn,
 		logout,
 		Register,
+		loggingOut,
 	};
 }

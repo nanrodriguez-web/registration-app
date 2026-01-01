@@ -4,3 +4,11 @@ export const getFeeds = async () => {
 
 	return response.data;
 };
+
+export const createPost = async (text: string) => {
+	const response = await api.post("/api/feed/post", {
+		text,
+	});
+
+	return response.data;
+};
