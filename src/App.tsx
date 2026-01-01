@@ -1,6 +1,7 @@
 import NotFound from "@/pages/notfound";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import "./App.css";
+import { Toaster } from "./components/ui/sonner";
 import { routes } from "./routes";
 
 function App() {
@@ -20,6 +21,8 @@ function App() {
 					<Route path='*' element={<NotFound />} />
 				</Routes>
 			</Router>
+
+			<Toaster />
 		</>
 	);
 }

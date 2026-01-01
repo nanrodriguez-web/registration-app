@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import {
@@ -8,55 +9,54 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { Spinner } from "@/components/ui/spinner";
+import useAuth from "@/hooks/useAuth";
+import { getFeeds } from "@/lib/data/feeds";
+import type { Feed } from "@/types/feed";
 import { useMemo, useState } from "react";
 import useSWR from "swr";
 
-type Feed = {
-	id: string;
-	text: string;
-	username: string;
-	createdAt: string;
-	updatedAt: string;
-};
-
 // Sample data
-const sampleFeeds: Feed[] = [
-	{
-		id: "-LY04VzG1z5g-QIOu8au",
-		text: "Hello There",
-		username: "user2",
-		createdAt: "Wed, 06 Feb 2019 04:34:35 GMT",
-		updatedAt: "Wed, 06 Feb 2019 04:34:35 GMT",
-	},
-	{
-		id: "-LY04VzG1z5g-QIOu8av",
-		text: "Second post!",
-		username: "user1",
-		createdAt: "Thu, 07 Feb 2019 09:12:00 GMT",
-		updatedAt: "Thu, 07 Feb 2019 09:12:00 GMT",
-	},
-	{
-		id: "-LY04VzG1z5g-QIOu8aw",
-		text: "Another feed example",
-		username: "user2",
-		createdAt: "Fri, 08 Feb 2019 11:22:10 GMT",
-		updatedAt: "Fri, 08 Feb 2019 11:22:10 GMT",
-	},
-];
+// const sampleFeeds: Feed[] = [
+// 	{
+// 		id: "-LY04VzG1z5g-QIOu8au",
+// 		text: "Hello There",
+// 		username: "user2",
+// 		createdAt: "Wed, 06 Feb 2019 04:34:35 GMT",
+// 		updatedAt: "Wed, 06 Feb 2019 04:34:35 GMT",
+// 	},
+// 	{
+// 		id: "-LY04VzG1z5g-QIOu8av",
+// 		text: "Second post!",
+// 		username: "user1",
+// 		createdAt: "Thu, 07 Feb 2019 09:12:00 GMT",
+// 		updatedAt: "Thu, 07 Feb 2019 09:12:00 GMT",
+// 	},
+// 	{
+// 		id: "-LY04VzG1z5g-QIOu8aw",
+// 		text: "Another feed example",
+// 		username: "user2",
+// 		createdAt: "Fri, 08 Feb 2019 11:22:10 GMT",
+// 		updatedAt: "Fri, 08 Feb 2019 11:22:10 GMT",
+// 	},
+// ];
 
-// Fake fetch function
-const fetchFeeds = async (): Promise<Feed[]> => {
-	return new Promise((resolve) => {
-		setTimeout(() => resolve(sampleFeeds), 1000); // simulate 1s network delay
-	});
-};
+// // Fake fetch function
+// const fetchFeeds = async (): Promise<Feed[]> => {
+// 	return new Promise((resolve) => {
+// 		setTimeout(() => resolve(sampleFeeds), 1000); // simulate 1s network delay
+// 	});
+// };
 
 export default function Feeds() {
 	const [limit, setLimit] = useState<number>(5);
 	const [filterUsername, setFilterUsername] = useState<string>("all");
 
 	// Use SWR to fetch feeds
-	const { data: feeds, error, isLoading } = useSWR("feeds", fetchFeeds);
+	const { data: feeds, error, isLoading } = useSWR("feeds", getFeeds);
+
+	const { logout } = useAuth({
+		middleware: "auth",
+	});
 
 	// Sort, filter, and limit feeds
 	const sortedFeeds = useMemo(() => {
@@ -77,11 +77,12 @@ export default function Feeds() {
 	// Unique usernames for filter dropdown
 	const usernames = useMemo(() => {
 		if (!feeds) return [];
-		return Array.from(new Set(feeds.map((f) => f.username)));
+		return Array.from(new Set(feeds.map((f: Feed) => f.username)));
 	}, [feeds]);
 
 	return (
 		<div className='p-6 max-w-3xl mx-auto space-y-6 min-h-screen'>
+			<Button onClick={logout}>Logout</Button>
 			<h1 className='text-2xl font-bold'>Feeds</h1>
 
 			{/* Filters */}
