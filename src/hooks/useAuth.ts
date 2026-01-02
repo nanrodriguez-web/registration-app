@@ -1,3 +1,4 @@
+import { ERROR_ENUM } from "@/enums/error-enum";
 import { useErrorHandling } from "@/hooks/useErrorHandling";
 import api from "@/lib/api";
 import { getUser } from "@/lib/data/user";
@@ -8,7 +9,7 @@ import type {
 	SIGNIN_T,
 	SIGNUP_T,
 } from "@/types/auth";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -68,34 +69,50 @@ export default function useAuth({
 		setFormErrors: React.Dispatch<React.SetStateAction<AUTH_ERROR_T | null>>
 	): Promise<boolean> => {
 		try {
-			const response = await api.post<{ token: string }>(
+			const { data } = await api.post<{ token: string }>(
 				"/api/account/login",
 				form
 			);
 
-			const newToken = response.data.token;
-
-			Cookies.set("auth", newToken, { path: "/" });
-			setToken(newToken);
+			Cookies.set("auth", data.token, { path: "/" });
+			setToken(data.token);
 
 			navigate("/feeds");
-
 			return true;
 		} catch (error) {
 			if (axios.isAxiosError(error)) {
-				const axiosError = error as AxiosError<AUTH_ERROR_T>;
+				const status = error.response?.status;
+				const responseData = error.response?.data;
+
+				/**
+				 * Explicit 401 handling
+				 */
+				if (status === 401) {
+					setFormErrors({
+						code: ERROR_ENUM.unauthorized,
+						message: "Invalid email or password",
+					});
+					return false;
+				}
+
+				/**
+				 * Other API errors
+				 */
 				handleError(
-					axiosError.response?.data?.code,
-					axiosError.response?.data?.message,
+					responseData?.code,
+					responseData?.message,
 					setFormErrors
 				);
-			} else {
-				toast.error("Something went wrong");
+
+				return false;
 			}
 
+			// Non-Axios error (unexpected)
+			toast.error("Something went wrong. Please try again.");
 			return false;
 		}
 	};
+
 	/**
 	 * Sign in
 	 */
@@ -119,16 +136,34 @@ export default function useAuth({
 			return true;
 		} catch (error) {
 			if (axios.isAxiosError(error)) {
-				const axiosError = error as AxiosError<AUTH_ERROR_T>;
+				const status = error.response?.status;
+				const responseData = error.response?.data;
+
+				/**
+				 * Explicit 401 handling
+				 */
+				if (status === 401) {
+					setFormErrors({
+						code: ERROR_ENUM.unauthorized,
+						message: "Invalid email or password",
+					});
+					return false;
+				}
+
+				/**
+				 * Other API errors
+				 */
 				handleError(
-					axiosError.response?.data?.code,
-					axiosError.response?.data?.message,
+					responseData?.code,
+					responseData?.message,
 					setFormErrors
 				);
-			} else {
-				toast.error("Something went wrong");
+
+				return false;
 			}
 
+			// Non-Axios error (unexpected)
+			toast.error("Something went wrong. Please try again.");
 			return false;
 		}
 	};

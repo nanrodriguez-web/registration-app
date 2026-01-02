@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { createPost } from "@/lib/data/feeds";
 import { useState } from "react";
@@ -23,7 +22,8 @@ export default function CreatePost() {
 
 			setText("");
 			mutate("feeds"); // refresh feed list
-		} catch (err) {
+		} catch (err: any) {
+			console.log({ "error creating post": err });
 			setError("Failed to create post");
 		} finally {
 			setLoading(false);
@@ -31,8 +31,8 @@ export default function CreatePost() {
 	};
 
 	return (
-		<Card className='max-w-3xl mx-auto'>
-			<CardContent className='space-y-4 p-4'>
+		<>
+			<div className='mb-2'>
 				<Textarea
 					placeholder='What’s on your mind?'
 					value={text}
@@ -42,14 +42,14 @@ export default function CreatePost() {
 
 				{error && <p className='text-sm text-red-500'>{error}</p>}
 
-				<div className='flex justify-end'>
+				<div className='flex justify-end mt-3'>
 					<Button
 						onClick={handleSubmit}
 						disabled={loading || !text.trim()}>
 						{loading ? "Posting..." : "Post"}
 					</Button>
 				</div>
-			</CardContent>
-		</Card>
+			</div>
+		</>
 	);
 }

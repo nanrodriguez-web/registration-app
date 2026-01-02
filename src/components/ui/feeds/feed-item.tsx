@@ -1,37 +1,77 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import type { Feed } from "@/types/feed";
-import { MessageSquare } from "lucide-react";
+import {
+	Card,
+	CardContent,
+	CardFooter,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
+import type { FEED_T } from "@/types/feed";
+import { ThumbsUp } from "lucide-react";
 import { Button } from "../button";
+import CommentModal from "./comment-modal";
 
-export default function FeedItem({ feed }: { feed: Feed }) {
+function pseudoRandomFromString(input: string, max: number) {
+	let hash = 0;
+	for (let i = 0; i < input.length; i++) {
+		hash = (hash << 5) - hash + input.charCodeAt(i);
+		hash |= 0;
+	}
+	return Math.abs(hash) % max;
+}
+
+export default function FeedItem({
+	feed,
+	interactive = false,
+}: {
+	feed: FEED_T;
+	interactive?: boolean;
+}) {
+	const likes = pseudoRandomFromString(feed.id, 30);
+	const comments = pseudoRandomFromString(feed.id + "comments", 10);
+
 	return (
-		<>
-			<Card key={feed.id}>
-				<CardHeader>
-					<CardTitle className='flex gap-2 items-center'>
-						<div>
-							<img
-								className='rounded-full h-10 w-10 '
-								src={feed.user.profilePic}
-							/>
-						</div>
+		<Card>
+			<CardHeader>
+				<CardTitle className='flex gap-2 items-center'>
+					<img
+						className='rounded-full h-10 w-10'
+						src={feed.user.profilePic}
+					/>
+					<span className='font-bold text-gray-400'>{feed.username}</span>
+				</CardTitle>
 
-						<span className='font-bold text-gray-400'>
-							{feed.username}
-						</span>
-					</CardTitle>
-					<p className='text-xs text-muted-foreground'>
-						{new Date(feed.createdAt).toLocaleString()}
-					</p>
-				</CardHeader>
-				<CardContent>
-					<p className='text-gray-500'>{feed.text}</p>
+				<p className='text-xs text-muted-foreground'>
+					{new Date(feed.createdAt).toLocaleString()}
+				</p>
+			</CardHeader>
 
-					<Button variant={"ghost"}>
-						<MessageSquare />
-					</Button>
-				</CardContent>
-			</Card>
-		</>
+			<CardContent className='text-gray-500 max-h-96 overflow-y-scroll'>
+				{feed.text}
+			</CardContent>
+			{interactive && (
+				<InteractiveButtons feed={feed} likes={likes} comments={comments} />
+			)}
+		</Card>
+	);
+}
+
+function InteractiveButtons({
+	feed,
+	likes,
+	comments,
+}: {
+	feed: FEED_T;
+	likes: number;
+	comments: number;
+}) {
+	return (
+		<CardFooter className='text-gray-400'>
+			<Button variant='ghost'>
+				<ThumbsUp />
+				{likes > 0 && ` ${likes}`}
+			</Button>
+
+			<CommentModal feed={feed} comments={comments} />
+		</CardFooter>
 	);
 }

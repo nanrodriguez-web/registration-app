@@ -1,5 +1,6 @@
 import Feeds from "@/pages/feeds";
 import SignIn from "@/pages/login";
+import Post from "@/pages/post";
 import Register from "@/pages/registration";
 import type { ROUTE_T } from "@/types/route";
 
@@ -18,5 +19,10 @@ export const routes: ROUTE_T[] = [
 		path: "/feeds",
 		name: "Feeds",
 		component: Feeds,
+	},
+	{
+		path: "/feeds/:feedId",
+		name: "Post Detail ",
+		component: Post,
 	},
 ];

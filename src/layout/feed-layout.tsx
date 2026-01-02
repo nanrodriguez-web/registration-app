@@ -1,4 +1,3 @@
-import CreatePost from "@/components/ui/feeds/create-post";
 import NavBar from "@/components/ui/navigation/nav-bar";
 
 export default function FeedLayout({
@@ -8,17 +7,13 @@ export default function FeedLayout({
 }) {
 	return (
 		<div className='mx-auto space-y-6 min-h-screen'>
-			<div className=' border-b p-6 w-full'>
+			<div className=' border-b p-3 md: w-full'>
 				<div className='max-w-3xl mx-auto'>
 					<NavBar />
 				</div>
 			</div>
 
-			<div>
-				<CreatePost />
-			</div>
-
-			<div className='max-w-3xl mx-auto'>{children}</div>
+			<div className='max-w-3xl mx-auto md:px-0 px-3'>{children}</div>
 		</div>
 	);
 }
