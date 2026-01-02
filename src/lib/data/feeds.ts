@@ -20,11 +20,18 @@ export const createPost = async (text: string) => {
 // no API for this
 export const getComments = () => {};
 
-// create a comment on a post
 export const createComment = async (postId: string, text: string) => {
 	if (!text) throw new Error("Comment text cannot be empty");
 
 	const response = await api.post(`/api/feed/${postId}/comment`, { text });
+
+	return response.data;
+};
+
+export const updatePost = async (postId: string, text: string) => {
+	if (!text) throw new Error("Post text cannot be empty");
+
+	const response = await api.put(`/api/feed/post`, { id: postId, text });
 
 	return response.data;
 };

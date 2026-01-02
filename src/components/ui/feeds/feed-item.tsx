@@ -7,8 +7,10 @@ import {
 } from "@/components/ui/card";
 import type { FEED_T } from "@/types/feed";
 import { ThumbsUp } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "../button";
 import CommentModal from "./comment-modal";
+import EditPostModal from "./edit-post";
 
 function pseudoRandomFromString(input: string, max: number) {
 	let hash = 0;
@@ -26,15 +28,21 @@ export default function FeedItem({
 	feed: FEED_T;
 	interactive?: boolean;
 }) {
+	const navigate = useNavigate();
+
 	const likes = pseudoRandomFromString(feed.id, 30);
 	const comments = pseudoRandomFromString(feed.id + "comments", 10);
 
+	const handleNavigateToUserProfile = () => {
+		navigate(`/user/?username=${feed.username}`);
+	};
+
 	return (
 		<Card>
-			<CardHeader>
+			<CardHeader onClick={handleNavigateToUserProfile}>
 				<CardTitle className='flex gap-2 items-center'>
 					<img
-						className='rounded-full h-10 w-10'
+						className=' w-10 h-10 rounded-full object-cover border cursor-pointer'
 						src={feed.user.profilePic}
 					/>
 					<span className='font-bold text-gray-400'>{feed.username}</span>
@@ -72,6 +80,9 @@ function InteractiveButtons({
 			</Button>
 
 			<CommentModal feed={feed} comments={comments} />
+
+			{/* Show Edit button only for post owner */}
+			<EditPostModal feed={feed} />
 		</CardFooter>
 	);
 }

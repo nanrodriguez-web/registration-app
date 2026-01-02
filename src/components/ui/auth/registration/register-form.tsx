@@ -58,7 +58,7 @@ export default function RegisterForm() {
 						)}
 
 						<div className='space-y-1'>
-							<Label htmlFor='firstname'>Firstname</Label>
+							<Label htmlFor='firstname'>First name</Label>
 							<Input
 								id='firstname'
 								name='firstname'
@@ -70,7 +70,7 @@ export default function RegisterForm() {
 						</div>
 
 						<div className='space-y-1'>
-							<Label htmlFor='lastname'>Lastname</Label>
+							<Label htmlFor='lastname'>Last name</Label>
 							<Input
 								id='lastname'
 								name='lastname'

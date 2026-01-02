@@ -57,7 +57,7 @@ export default function useAuth({
 		data: user,
 		isLoading: loadingUser,
 		mutate,
-	} = useSWR(token ? "/api/user" : null, getUser, {
+	} = useSWR(token ? "/api/user" : null, () => getUser(), {
 		revalidateOnFocus: false,
 	});
 

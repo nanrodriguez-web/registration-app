@@ -7,26 +7,14 @@ import useSWR from "swr";
 export function FeedProvider({ children }: { children: React.ReactNode }) {
 	const [filterUsername, setFilterUsernameState] = useState<string>("all");
 	const [limit, setLimitState] = useState<number>(20);
-	// const [start, setStart] = useState<number>(1);
+	const [searchText, setSearchText] = useState<string>(""); // <-- new
 
-	const setFilterUsername = (username: string) => {
+	const setFilterUsername = (username: string) =>
 		setFilterUsernameState(username);
-		// setStart(1); // reset pagination
-	};
+	const setLimit = (newLimit: number) => setLimitState(newLimit);
+	const setSearch = (text: string) => setSearchText(text); // <-- setter
 
-	const setLimit = (newLimit: number) => {
-		setLimitState(newLimit);
-		// setStart(1); // reset pagination
-	};
-
-	const swrKey: [string, GET_FEED_PARAMS_T] = [
-		"feeds",
-		{
-			limit,
-			// start,
-			username: filterUsername !== "all" ? filterUsername : undefined,
-		},
-	];
+	const swrKey: [string, GET_FEED_PARAMS_T] = ["feeds", { limit }];
 
 	const {
 		data: feeds,
@@ -37,27 +25,43 @@ export function FeedProvider({ children }: { children: React.ReactNode }) {
 		getFeeds(params)
 	);
 
-	// --- Unique usernames for filter ---
 	const usernames: string[] = useMemo(() => {
 		if (!feeds) return [];
 		return Array.from(new Set(feeds.map((f: FEED_T) => f.username)));
 	}, [feeds]);
 
-	// --- Context value ---
+	const filteredFeeds = useMemo(() => {
+		if (!feeds) return [];
+
+		let list = feeds;
+
+		// filter by username
+		if (filterUsername !== "all") {
+			list = list.filter((f: FEED_T) => f.username === filterUsername);
+		}
+
+		// filter by search text
+		if (searchText.trim() !== "") {
+			const lower = searchText.toLowerCase();
+			list = list.filter((f: FEED_T) =>
+				f.text.toLowerCase().includes(lower)
+			);
+		}
+
+		return list;
+	}, [feeds, filterUsername, searchText]);
+
 	const value = {
-		feeds: feeds ?? [],
+		feeds: filteredFeeds ?? [],
 		usernames,
 		isLoading,
 		error,
-
 		filterUsername,
 		limit,
-		// start,
-
+		searchText, // <-- expose search text
 		setFilterUsername,
 		setLimit,
-		// setStart,
-
+		setSearch, // <-- expose search setter
 		mutate,
 	};
 

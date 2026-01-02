@@ -8,6 +8,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useNavigate } from "react-router-dom";
 import { Button } from "../button";
 import { Spinner } from "../spinner";
 
@@ -16,18 +17,29 @@ export default function UserProfile() {
 		middleware: "auth",
 	});
 
+	const navigate = useNavigate();
+
+	const handleNavigateUserProfile = () => {
+		navigate(`/user`);
+	};
+
 	return (
 		<div>
 			<DropdownMenu>
-				<DropdownMenuTrigger>
-					<div className='h-5 w-5 border-2 rounded-full'>
-						<img src={user?.profilePic} />
-					</div>
+				<DropdownMenuTrigger className='flex items-center justify-center'>
+					<>
+						<img
+							src={user?.profilePic}
+							className='w-10 h-10 rounded-full object-cover border cursor-pointer'
+						/>
+					</>
 				</DropdownMenuTrigger>
 				<DropdownMenuContent>
 					<DropdownMenuLabel>My Account</DropdownMenuLabel>
 
-					<DropdownMenuItem>Profile</DropdownMenuItem>
+					<DropdownMenuItem onClick={handleNavigateUserProfile}>
+						Profile
+					</DropdownMenuItem>
 					{/*
 					<DropdownMenuItem>Billing</DropdownMenuItem>
 					<DropdownMenuItem>Team</DropdownMenuItem> */}

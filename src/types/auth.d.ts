@@ -1,14 +1,12 @@
-export type SIGNIN_T = {
+export interface SIGNIN_T {
 	username: string;
 	password: string;
-};
+}
 
-export type SIGNUP_T = {
-	username: string;
-	password: string;
+export interface SIGNUP_T extends SIGNIN_T {
 	firstname: string;
 	lastname: string;
-};
+}
 
 export type AUTHENTICATION_T = {
 	middleware?: "guest" | "auth" | null;

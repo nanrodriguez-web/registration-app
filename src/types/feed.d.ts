@@ -1,17 +1,16 @@
 export type FEEDCONTEXT_T = {
 	feeds: FEED_T[];
 	usernames: string[];
-
 	isLoading: boolean;
 	error: any;
 
 	filterUsername: string;
 	limit: number;
-	start?: number;
+	searchText: string;
 
 	setFilterUsername: (value: string) => void;
 	setLimit: (value: number) => void;
-	setStart?: (value: number) => void;
+	setSearch: (value: string) => void;
 
 	mutate: () => void;
 };
@@ -28,5 +27,9 @@ export type FEED_T = {
 export type GET_FEED_PARAMS_T = {
 	limit?: number;
 	start?: number;
-	username?: string;
 };
+
+export interface EDIT_POST_MODAL_PROPS {
+	feed: FEED_T;
+	onUpdate?: (updatedText: string) => void; // optional callback after update
+}

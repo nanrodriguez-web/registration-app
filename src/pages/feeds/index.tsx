@@ -1,5 +1,6 @@
 import CreatePost from "@/components/ui/feeds/create-post";
 import FeedItem from "@/components/ui/feeds/feed-item";
+import FeedsSearch from "@/components/ui/feeds/feed-search";
 import FeedsFilter from "@/components/ui/feeds/feeds-filter";
 import FeedItemSkeleton from "@/components/ui/loader/feed-item-skeleton";
 import { useFeed } from "@/contexts/feeds/feed-context";
@@ -14,7 +15,7 @@ function FeedsContent() {
 			<CreatePost />
 
 			<div className='flex justify-between items-center my-2'>
-				<h2 className='font-semibold'>Feeds</h2>
+				<FeedsSearch />
 				<FeedsFilter />
 			</div>
 
